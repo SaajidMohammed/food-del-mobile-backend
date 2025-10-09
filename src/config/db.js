@@ -10,7 +10,7 @@ const pool = new Pool({
     rejectUnauthorized: false,
   },
 });
-const connectDB = async () => {
+const connectDB = async (retryCount = 0) => {
   try {
     await pool.connect();
     console.log("Connected to PostgreSQL");
@@ -18,7 +18,15 @@ const connectDB = async () => {
   } catch (error) {
     console.error("Database Connection failed", error.message);
     console.error("Full Error:", error);
-    process.exit();
+    if (retryCount < 5) { // Retry up to 5 times
+      const delay = Math.pow(2, retryCount) * 1000; // Exponential backoff
+      console.log(`Retrying database connection in ${delay / 1000} seconds... (Attempt ${retryCount + 1})`);
+      await new Promise(res => setTimeout(res, delay));
+      await connectDB(retryCount + 1);
+    } else {
+      console.error("Max retries reached. Exiting process.");
+      process.exit(1);
+    }
   }
 };
 
