@@ -48,9 +48,11 @@ const fetchOrders = async (req, res) => {
 const fetchOrderDetails = async (req, res) => {
   const userId = req.user.id;
   const { id } = req.params;
+  console.log(`Fetching details for orderId: ${id}, userId: ${userId}`);
 
   try {
     const details = await getOrderDetails(id, userId);
+    console.log(`Found ${details.length} detail rows for orderId: ${id}`);
     if (details.length === 0) {
       return res.status(404).json({ error: 'Order not found' });
     }
