@@ -43,7 +43,8 @@ const getOrdersByUser = async (userId) => {
 
 // 📄 Fetch detailed info for a single order
 const getOrderDetails = async (orderId, userId) => {
-  const result = await pool.query(`
+  console.log(`[getOrderDetails] Received orderId: ${orderId}, userId: ${userId}`);
+  const query = `
     SELECT 
       o.id AS order_id,
       o.total_amount,
@@ -60,8 +61,11 @@ const getOrderDetails = async (orderId, userId) => {
     JOIN order_items oi ON o.id = oi.order_id
     JOIN dishes d ON oi.dish_id = d.id
     WHERE o.id = $1 AND o.user_id = $2
-  `, [orderId, userId]);
-
+  `;
+  console.log(`[getOrderDetails] Executing query: ${query} with values [${orderId}, ${userId}]`);
+  const result = await pool.query(query, [orderId, userId]);
+  console.log(`[getOrderDetails] Query returned ${result.rows.length} rows.`);
+  console.log(`[getOrderDetails] Raw query results:`, result.rows);
   return result.rows;
 };
 
