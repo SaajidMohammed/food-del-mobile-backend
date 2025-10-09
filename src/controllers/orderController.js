@@ -25,7 +25,7 @@ const createOrder = async (req, res) => {
 
     const order = await placeOrder(userId, cartItems, address);
     await clearCartByUser(userId); // ✅ Clear cart after order
-    res.status(201).json(order);
+    res.status(201).json({ orderId: order.id });
   } catch (err) {
     console.error('❌ Order creation failed:', err.message);
     res.status(500).json({ error: 'Failed to place order' });
